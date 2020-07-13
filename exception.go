@@ -122,6 +122,19 @@ func Throw(v interface{}) {
 	panic(fmt.Errorf("#exception# %v", v))
 }
 
+func Eat(v ...interface{}) error {
+	if len(v) == 0 {
+		return nil
+	}
+	if IsNil(v[len(v)-1]) {
+		return nil
+	}
+	if err, ok := v[len(v)-1].(error); ok {
+		return err
+	}
+	return nil
+}
+
 func AssertError(v ...interface{}) {
 	if len(v) == 0 {
 		return
@@ -140,59 +153,16 @@ func AssertEqual(condition bool, v ...interface{}) {
 	panic(fmt.Errorf("#exception# %s", str[:len(str)-1]))
 }
 
-func New(v ...interface{}) Error {
-	if len(v) == 0 {
-		return nil
-	}
-	if IsNil(v[len(v)-1]) {
-		return nil
-	}
-	return newErrorFromDeep(v[len(v)-1], 2)
+func New(v interface{}) Error {
+	return newErrorFromDeep(v, 2)
 }
 
 func NewMany(v ...interface{}) Error {
-	if len(v) == 0 {
-		return nil
-	}
-
-	var invalid = true
-	for i := 0; i < len(v); i++ {
-		if !IsNil(v[i]) {
-			invalid = false
-			break
-		}
-	}
-
-	if invalid {
-		return nil
-	}
-
-	if len(v) == 1 {
-		return newErrorFromDeep(v[0], 2)
-	}
-
 	var str = fmt.Sprintln(v...)
-
 	return newErrorFromDeep(str[0:len(str)-1], 2)
 }
 
 func NewFormat(format string, v ...interface{}) Error {
-	if len(v) == 0 {
-		return nil
-	}
-
-	var invalid = true
-	for i := 0; i < len(v); i++ {
-		if !IsNil(v[i]) {
-			invalid = false
-			break
-		}
-	}
-
-	if invalid {
-		return nil
-	}
-
 	var str = fmt.Sprintf(format, v...)
 	return newErrorFromDeep(str, 2)
 }
@@ -264,4 +234,9 @@ func Stack(deep int) (string, int) {
 	var file, line = flInfo[0], flInfo[1]
 	var l, _ = strconv.Atoi(line)
 	return file, l
+}
+
+func FuncName() string {
+	pc, _, _, _ := runtime.Caller(1)
+	return runtime.FuncForPC(pc).Name()
 }
