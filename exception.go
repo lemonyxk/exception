@@ -235,8 +235,3 @@ func Stack(deep int) (string, int) {
 	var l, _ = strconv.Atoi(line)
 	return file, l
 }
-
-func FuncName() string {
-	pc, _, _, _ := runtime.Caller(1)
-	return runtime.FuncForPC(pc).Name()
-}
