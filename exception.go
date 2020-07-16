@@ -13,6 +13,7 @@ package exception
 import (
 	"fmt"
 	"os"
+	"reflect"
 	"runtime"
 	"runtime/debug"
 	"strconv"
@@ -234,4 +235,17 @@ func Stack(deep int) (string, int) {
 	var file, line = flInfo[0], flInfo[1]
 	var l, _ = strconv.Atoi(line)
 	return file, l
+}
+
+func GetFuncName(fn interface{}) string {
+	t := reflect.ValueOf(fn).Type()
+	if t.Kind() == reflect.Func {
+		return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
+	}
+	return t.String()
+}
+
+func FuncName() string {
+	pc, _, _, _ := runtime.Caller(1)
+	return runtime.FuncForPC(pc).Name()
 }
