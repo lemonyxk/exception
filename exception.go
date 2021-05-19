@@ -136,7 +136,7 @@ func Eat(v ...interface{}) error {
 	return nil
 }
 
-func IfNotNil(v ...interface{}) {
+func AssertError(v ...interface{}) {
 	if len(v) == 0 {
 		return
 	}
@@ -155,21 +155,21 @@ func IfNotNil(v ...interface{}) {
 // }
 
 func New(v interface{}) Error {
-	return newErrorFromDeep(v, 2)
+	return newErrorFromDeep(v)
 }
 
 func NewMany(v ...interface{}) Error {
 	var str = fmt.Sprintln(v...)
-	return newErrorFromDeep(str[0:len(str)-1], 2)
+	return newErrorFromDeep(str[0 : len(str)-1])
 }
 
 func NewFormat(format string, v ...interface{}) Error {
 	var str = fmt.Sprintf(format, v...)
-	return newErrorFromDeep(str, 2)
+	return newErrorFromDeep(str)
 }
 
-func newErrorFromDeep(v interface{}, deep int) Error {
-	file, line := Caller(deep)
+func newErrorFromDeep(v interface{}) Error {
+	file, line := Caller()
 	return newErrorWithFileAndLine(v, file, line)
 }
 
@@ -208,33 +208,36 @@ type eFace struct {
 	data  unsafe.Pointer
 }
 
-func Caller(deep int) (string, int) {
-	_, file, line, ok := runtime.Caller(deep + 1)
-	if !ok {
-		return "", 0
+var rootPath, _ = os.Getwd()
+
+func Caller() (string, int) {
+
+	var file, line = "", 0
+
+	// 0 for opt
+	for skip := 0; true; skip++ {
+		_, codePath, codeLine, ok := runtime.Caller(skip)
+		if !ok {
+			break
+		}
+
+		if !strings.HasPrefix(codePath, rootPath) {
+			break
+		}
+
+		file, line = codePath, codeLine
 	}
 
-	var rootPath, err = os.Getwd()
-	if err != nil {
-		return file, line
-	}
-	if rootPath == "/" {
-		return file, line
-	}
-	if strings.HasPrefix(file, rootPath) {
-		file = file[len(rootPath)+1:]
-	}
-
-	return file, line
+	return clipFileAndLine(file, line)
 }
 
 func Stack(deep int) (string, int) {
 	var list = strings.Split(string(debug.Stack()), "\n")
 	var info = strings.TrimSpace(list[deep])
 	var flInfo = strings.Split(strings.Split(info, " ")[0], ":")
-	var file, line = flInfo[0], flInfo[1]
-	var l, _ = strconv.Atoi(line)
-	return file, l
+	var file, l = flInfo[0], flInfo[1]
+	var line, _ = strconv.Atoi(l)
+	return clipFileAndLine(file, line)
 }
 
 func GetFuncName(fn interface{}) string {
@@ -248,4 +251,24 @@ func GetFuncName(fn interface{}) string {
 func FuncName() string {
 	pc, _, _, _ := runtime.Caller(1)
 	return runtime.FuncForPC(pc).Name()
+}
+
+func clipFileAndLine(file string, line int) (string, int) {
+	if file == "" || line == 0 {
+		return "", 0
+	}
+
+	if runtime.GOOS == "windows" {
+		rootPath = strings.Replace(rootPath, "\\", "/", -1)
+	}
+
+	if rootPath == "/" {
+		return file, line
+	}
+
+	if strings.HasPrefix(file, rootPath) {
+		file = file[len(rootPath)+1:]
+	}
+
+	return file, line
 }

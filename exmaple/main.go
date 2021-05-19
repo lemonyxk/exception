@@ -18,10 +18,16 @@ import (
 
 func main() {
 
+	fmt.Println(exception.Caller())
+
+	fmt.Println(exception.New("hello error").String())
+
 	exception.Try(func() {
 		panic(1)
 	}).Catch(func(err exception.Error) {
-		fmt.Printf("%s", err.String())
-	})
+		fmt.Printf("%s\n", err.String())
+	}).Finally(func(err exception.Error) {
+		fmt.Printf("%s\n", err.String())
+	}).String()
 
 }
