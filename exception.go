@@ -136,7 +136,7 @@ func Eat(v ...interface{}) error {
 	return nil
 }
 
-func AssertError(v ...interface{}) {
+func IfNotNil(v ...interface{}) {
 	if len(v) == 0 {
 		return
 	}
@@ -146,13 +146,13 @@ func AssertError(v ...interface{}) {
 	panic(fmt.Errorf("#exception# %v", v[len(v)-1]))
 }
 
-func AssertEqual(condition bool, v ...interface{}) {
-	if !condition {
-		return
-	}
-	var str = fmt.Sprintln(v...)
-	panic(fmt.Errorf("#exception# %s", str[:len(str)-1]))
-}
+// func AssertEqual(condition bool, v ...interface{}) {
+// 	if !condition {
+// 		return
+// 	}
+// 	var str = fmt.Sprintln(v...)
+// 	panic(fmt.Errorf("#exception# %s", str[:len(str)-1]))
+// }
 
 func New(v interface{}) Error {
 	return newErrorFromDeep(v, 2)
