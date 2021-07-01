@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/lemoyxk/caller"
 )
 
 type exception struct {
@@ -145,13 +147,13 @@ func NewFormat(format string, v ...interface{}) Error {
 }
 
 func newErrorFromDeep(v interface{}) Error {
-	file, line := Caller()
+	file, line := caller.Deep(3)
 	return newErrorWithFileAndLine(v, file, line)
 }
 
 func newStackErrorFromDeep(v interface{}, deep int) Error {
 	deep = 10 + deep*2
-	var file, line = Stack(deep)
+	var file, line = caller.Stack(deep)
 	return newErrorWithFileAndLine(v, file, line)
 }
 

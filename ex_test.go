@@ -7,12 +7,12 @@
 *
 * @create: 2021-05-22 00:49
 **/
-
 package exception
 
 import (
 	"testing"
 
+	"github.com/lemoyxk/caller"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,7 +29,7 @@ type B interface {
 }
 
 func TestTry(t *testing.T) {
-	file, line := Caller()
+	file, line := caller.Deep(1)
 	assert.Equal(t, file, "ex_test.go", file)
 	assert.Equal(t, line, 32, line)
 

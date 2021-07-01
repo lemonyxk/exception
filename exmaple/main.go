@@ -18,8 +18,6 @@ import (
 
 func main() {
 
-	fmt.Println(exception.Caller())
-
 	fmt.Println(exception.New("hello error").String())
 
 	exception.Try(func() {
