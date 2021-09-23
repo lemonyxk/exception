@@ -147,8 +147,8 @@ func NewFormat(format string, v ...interface{}) Error {
 }
 
 func newErrorFromDeep(v interface{}) Error {
-	file, line := caller.Deep(3)
-	return newErrorWithFileAndLine(v, file, line)
+	ci := caller.Deep(3)
+	return newErrorWithFileAndLine(v, ci.File, ci.Line)
 }
 
 func newStackErrorFromDeep(v interface{}, deep int) Error {

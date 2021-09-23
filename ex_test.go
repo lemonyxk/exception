@@ -29,9 +29,9 @@ type B interface {
 }
 
 func TestTry(t *testing.T) {
-	file, line := caller.Deep(1)
-	assert.Equal(t, file, "ex_test.go", file)
-	assert.Equal(t, line, 32, line)
+	ci := caller.Deep(1)
+	assert.Equal(t, ci.File, "ex_test.go", ci.File)
+	assert.Equal(t, ci.Line, 32, ci.Line)
 
 	var err = New("hello error")
 	assert.Equal(t, err.Error(), "hello error", err.Error())
