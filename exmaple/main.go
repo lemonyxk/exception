@@ -12,6 +12,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/lemoyxk/exception"
 )
@@ -20,12 +21,11 @@ func main() {
 
 	fmt.Println(exception.New("hello error").String())
 
-	exception.Try(func() {
-		panic(1)
+	var err = exception.Try(func() {
+		panic(1111111111111)
 	}).Catch(func(err exception.Error) {
 		fmt.Printf("%s\n", err.String())
-	}).Finally(func(err exception.Error) {
-		fmt.Printf("%s\n", err.String())
-	}).String()
+	}).Error()
 
+	log.Println(err)
 }
