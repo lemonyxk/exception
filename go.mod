@@ -1,4 +1,4 @@
-module github.com/lemoyxk/exception
+module github.com/lemonyxk/exception
 
 go 1.17
 

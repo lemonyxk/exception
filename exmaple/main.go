@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/lemoyxk/exception"
+	"github.com/lemonyxk/exception"
 )
 
 func main() {
